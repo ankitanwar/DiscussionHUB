@@ -1,26 +1,42 @@
 import bcrypt
-from db import db
+import mysql.connector
 
-class UserDataBase(db.Model):
-    __tablename__='users'
-    FistName=db.Column(db.Integer,primary_key=True)
-    LastName=db.Column(db.String(50))
-    Email=db.Column(db.String(50),unique=True,nullable=False)
-    Password=db.Column(db.String(50),nullable=False)
+try:
+    db=mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="mysql",
+        database="user",
+    )
+    cursor=db.cursor()
+except Exception as e:
+    print("Error while connecting to the user database {}".format(e))
+INSERT="INSERT INTO user (firstname,lastname,email,password) VALUES (%s,%s,%s,%s)"
+SEARCH="SELECT * FROM user WHERE email=%s"
+
+
+class UserDataBase:
+    def __init__(self,firstname="",lastname="",email="",password=""):
+        self.fistname=firstname
+        self.Password=password
+        self.email=email
+        self.lastname=lastname
 
     def add(self):
         print("This is working")
         hashedPassword=bcrypt.hashpw(self.Password.encode('utf-8'),bcrypt.gensalt())
         self.Password=hashedPassword
-        db.session.add(self)
-        db.session.commit()
+        cursor.execute(INSERT,self)
+        db.commit()
 
-    def searchByEmail(self,email):
+    def searchByEmail(self):
+        search=cursor.execute(SEARCH,self.email)
+        if search:
+            return search
+    def verifyUser(self,email,password):
         search=db.session.query(UserDataBase).filter(UserDataBase.Email==email).first()
         if search:
             return search
-    def verifyUser(self):
-        pass
     def deleteUser(self):
         pass
 

@@ -1,7 +1,6 @@
 from flask_restful import Resource
 from flask import request
 from user.user import ValidateUser
-from user.user import AccessToken
 from DataBase.sqlDataBase import UserDataBase
 
 class User(Resource):
