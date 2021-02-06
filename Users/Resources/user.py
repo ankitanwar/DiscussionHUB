@@ -19,8 +19,12 @@ class User(Resource):
     
 
 class UserLogin(Resource):
-    def Login(self):
-        pass
+    def get(self):
+        data=request.get_json()
+        search=UserDataBase(email=data['email'])
+        if search==None:
+            return {"message":"Invalid Email Address"},400
+        
 
 
 
