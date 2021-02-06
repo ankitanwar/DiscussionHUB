@@ -11,26 +11,12 @@ class User(Resource):
         if err!=None:
             return err,400
         try:
-            UserDataBase.add(**data)
+            userRequest=UserDataBase(**data).add()
+            print("The values are",userRequest.lastname,userRequest.firstname,userRequest.email)
             return {"message":"User Created Successfully"},200
         except Exception as e:
-            return {"message":"Some Error has been occur while creating the user {}".format(e)}
-
-    def get(self):
-        check=AccessToken.verify()
-        if check==False:
-            return {"message":"Invalid access token"}
-        data=request.get_json()
-        err=ValidateUser(**data).login()
-        if err!=None:
-            return err
-
-    def patch(self):
-        check=AccessToken.verify()
-        if check==False:
-            return {"message":"Invalid access token"}
-        data=request.get_json()
-
+            return {"message":"Some Error has been occur while creating the user {}".format(e)},400
+    
 
 class UserLogin(Resource):
     def Login(self):

@@ -14,7 +14,7 @@ class ValidateUser:
             return {"message":"Email cannot be empty"}
         if "@" not in self.Email:
             return {"message":"Please enter the valid email address"}
-        srchMail=UserDataBase(self).searchByEmail()
+        srchMail=UserDataBase(email=self.Email).searchByEmail()
         if srchMail!=None:
             return {"message":"Given Email is already registered"}
         if len(self.PassWord)<5:
