@@ -1,5 +1,7 @@
 from DataBase.sqlDataBase import UserDataBase
 from flask import request
+
+
 class ValidateUser:
     def __init__(self,firstname="",lastname="",email="",password=""):
         self.FirstName=firstname
@@ -25,3 +27,19 @@ class ValidateUser:
             return {"message":"Enter the valid email address"}
         if len(self.PassWord)<5:
             return {"message":"Invalid password"}
+    
+
+class UserMarshal:
+    def isPublic(self,result):
+        values={}
+        values["id"]=result[0]
+        values["email"]=result[3]
+        return values
+    def isPrivate(self,result):
+        values={}
+        values["id"]=result[0]
+        values["firstName"]=result[1]
+        values["lastName"]=result[2]
+        values["email"]=result[3]
+        return  values
+

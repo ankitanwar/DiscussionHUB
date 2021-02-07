@@ -1,11 +1,12 @@
 from flask import Flask
 from flask_restful import Api
-from Resources.user import User
+from Resources.user import User,UserLogin
 from DataBase.sqlDataBase import db
 
 app=Flask(__name__)
 api=Api(app)
 api.add_resource(User,"/user")
+api.add_resource(UserLogin,"/login")
 
 
 if __name__ == '__main__':

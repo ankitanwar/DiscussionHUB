@@ -23,8 +23,6 @@ class UserDataBase:
         self.lastname=lastname
 
     def add(self):
-        hashedPassword=bcrypt.hashpw(self.Password.encode('utf-8'),bcrypt.gensalt())
-        self.Password=hashedPassword
         data=(self.firstname,self.lastname,self.email,self.Password)
         cursor.execute(INSERT,data)
         db.commit()
