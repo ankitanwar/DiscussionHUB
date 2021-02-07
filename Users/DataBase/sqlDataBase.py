@@ -33,10 +33,7 @@ class UserDataBase:
         found=cursor.fetchone()
         if found:
             return found
-    def verifyUser(self,email,password):
-        search=db.session.query(UserDataBase).filter(UserDataBase.Email==email).first()
-        if search:
-            return search
+            
     def deleteUser(self):
         pass
 
