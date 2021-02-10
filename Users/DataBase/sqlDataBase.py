@@ -11,8 +11,13 @@ try:
     cursor=db.cursor(buffered=True)
 except Exception as e:
     print("Error while connecting to the user database {}".format(e))
+
+
 INSERT="INSERT INTO user (firstname,lastname,email,password) VALUES (%s,%s,%s,%s)"
-SEARCH="SELECT * FROM user WHERE email = %s"
+SEARCHBYMAIL="SELECT * FROM user WHERE email = %s"
+DELETE="DELETE FROM user WHERE email = %s"
+UPDATE="UPDATE user SET firstname=%s,lastname=%s,email=%s password=%s WHERE id=%s"
+SEARCHBYID="SELECT * FROM user WHERE id = %s"
 
 
 class UserDataBase:
@@ -29,17 +34,28 @@ class UserDataBase:
 
     def searchByEmail(self):
         email=(self.email,)
-        cursor.execute(SEARCH,email)
+        cursor.execute(SEARCHBYMAIL,email)
+        found=cursor.fetchone()
+        if found:
+            return found
+
+    def searchByID(self,id):
+        cursor.execute(SEARCHBYID,id)
         found=cursor.fetchone()
         if found:
             return found
             
     def deleteUser(self):
-        pass
+        email=(self.email,)
+        cursor.execute(DELETE,email)
+        db.commit()
 
-    def editUser(self):
-        pass
 
+    def updateDetails(self,id):
+        data=(self.firstname,self.lastname,self.email,self.Password,id)
+        print("The value of data is ",data)
+        cursor.Execute(UPDATE,data)
+        db.commit()
 
 
     

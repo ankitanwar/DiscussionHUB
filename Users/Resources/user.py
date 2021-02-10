@@ -1,6 +1,7 @@
 from flask_restful import Resource,reqparse
 from cryptography.fernet import Fernet
 from flask import request
+from werkzeug import datastructures
 from user.user import ValidateUser
 from DataBase.sqlDataBase import UserDataBase
 
@@ -28,10 +29,42 @@ class User(Resource):
             UserDataBase(**data).add()
             return {"message":"User Created Successfully"},200
         except Exception as e:
-            return {"message":"Some Error has been occur while creating the user {}".format(e)},400
+            return {"message":"Error while creating the user {}".format(e)},500
     
+    def delete(self):
+        data=User.parser.parse_args()
+        try:
+            UserDataBase(email=data["email"]).deleteUser()
+            return {"message":"User has been deleted successfully"},200
+        except Exception as e:
+            return {"message":"Error occured while deleting the user {}".format(e)},500
+    
+    def patch(self):
+        data=User.parser.parse_args()
+        email=request.headers.get("email")
+        user=UserDataBase(email=email).searchByEmail()
+        if user==None:
+            return {"message":"Invalid credentials"},400
+        if data["firstname"]=="":
+            data["firstname"]=user[1]
+        if data["lastname"]=="":
+            data["lastname"]=user[2]
+        if data["email"]!="":
+            search=UserDataBase(email=data["email"]).searchByEmail()
+            if search:
+                return {"message":"Email already exist in the database"}
+        if data["email"]=="":
+            data["email"]=user[3]
+        if data["password"]=="":
+            data["password"]=user[4]
+        try:
+            UserDataBase(**data).updateDetails(user[0])
+            return {"message":"Porfile updated successfully"}
+        except Exception as e:
+            return {"Error occured while upating the details {}".format(e)}
 
-class UserLogin(Resource):
+    
+class UserVerify(Resource):
 
     parser=reqparse.RequestParser()
     parser.add_argument("email",type=str,required=True,help="Email cannot be empty")
@@ -39,7 +72,7 @@ class UserLogin(Resource):
 
 
     def post(self):
-        data=UserLogin.parser.parse_args()
+        data=UserVerify.parser.parse_args()
         search=UserDataBase(email=data['email']).searchByEmail()
         if search==None:
             return {"message":"Invalid Email Address"},400
@@ -50,11 +83,4 @@ class UserLogin(Resource):
         if stored==receivedPassword:
             return{"message":"You have been logged in successfully"},200
         else:
-            return {"message":"Invalid credentials"},401
-
-
-class UserHistory(Resource):
-    def get(self):  #To get the user history from monoDB DATABASE
-        pass 
-    def delete(self):  #TO delete the user history from mongoDB database
-        pass
+            return {"message":"Invalid credentials"},400
