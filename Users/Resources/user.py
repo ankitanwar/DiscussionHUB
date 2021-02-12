@@ -1,12 +1,10 @@
 from flask_restful import Resource,reqparse
-from cryptography.fernet import Fernet
 from flask import request
-from werkzeug import datastructures
 from user.user import ValidateUser
 from DataBase.sqlDataBase import UserDataBase
+import bcrypt
 
-key=Fernet.generate_key()
-f=Fernet(key)
+salt=bcrypt.gensalt()
 
 class User(Resource):
 
@@ -23,8 +21,8 @@ class User(Resource):
         if err!=None:
             return err,400
         try:
-            receivedPassword=bytes(data["password"],encoding='utf8')
-            hashed = f.encrypt(receivedPassword)
+            receviedPassword=bytes(data["password"],encoding='utf-8')
+            hashed = bcrypt.hashpw(receviedPassword,salt)
             data["password"]=hashed
             UserDataBase(**data).add()
             return {"message":"User Created Successfully"},200
@@ -76,11 +74,10 @@ class UserVerify(Resource):
         search=UserDataBase(email=data['email']).searchByEmail()
         if search==None:
             return {"message":"Invalid Email Address"},400
-        receivedPassword=bytes(data["password"],encoding='utf8')
-        storedPassword=bytes(search[4],encoding='utf8')
-        stored=f.decrypt(storedPassword)
-        print("The value od stored and received password is",storedPassword,receivedPassword)
-        if stored==receivedPassword:
-            return{"message":"You have been logged in successfully"},200
+        receviedPassword=bytes(data["password"],encoding='utf-8')
+        storedPassword=bytes(search[4],encoding='utf-8')
+        checkPassword=bcrypt.checkpw(receviedPassword,storedPassword)
+        if checkPassword==False:
+            return {"message":"Invalid Credentials"},400
         else:
-            return {"message":"Invalid credentials"},400
+            return {"message":"Verified"},200
