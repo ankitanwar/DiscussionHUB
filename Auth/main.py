@@ -11,7 +11,7 @@ if __name__=="__main__":
     try:
         print("Connecting to the Database.....")
         cluster.admin.command('ping')
-        app.run("8081",debug=True)
+        app.run(port="8082",debug=True)
     except Exception as e:
         print("Error Occured while trying to run the server{}".format(e))
     finally:

@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 try:
-    cluster=MongoClient(host="localhost")
+    cluster=MongoClient(host="localhost",port=27017)
     db=cluster["User"]
     collection=db["AccessToken"]
 except Exception as e:
@@ -14,8 +14,8 @@ class AccessTokenDB:
         self.email=email
         self.id=id
     def CreateAccessToken(self):
-
         data={"_id":self.id,"email":self.email}
+        print("The value of data is ",data)
         collection.insert_one(data)
 
         pass

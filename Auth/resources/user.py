@@ -1,6 +1,5 @@
 from flask_restful import Resource,reqparse
 from flask import request
-from pymongo import database
 from database.mongoDB_AccessToken import AccessTokenDB
 import requests
 
@@ -13,10 +12,12 @@ class AccessToken(Resource):
     def post(self):
         data=AccessToken.parser.parse_args()
         verify=requests.post("http://127.0.0.1:8080/verify",json={"email":data["email"],"password":data["password"]})
-        if verify.status_code<=200:
-            pass
+        if verify.status_code<299:
+            response=verify.json()
+            AccessTokenDB(**response).CreateAccessToken()    
+            print(verify.content)  
         else:
-            return {"message":
+            return {"message":"Invalid credentials"}
     
     def get(self):
         accessToken=request.headers.get("x-access-token")

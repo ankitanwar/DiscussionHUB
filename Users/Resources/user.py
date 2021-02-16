@@ -1,6 +1,6 @@
 from flask_restful import Resource,reqparse
 from flask import request
-from user.user import ValidateUser
+from user.user import ValidateUser,UserMarshal
 from DataBase.sqlDataBase import UserDataBase
 import bcrypt
 
@@ -80,4 +80,11 @@ class UserVerify(Resource):
         if checkPassword==False:
             return {"message":"Invalid Credentials"},400
         else:
-            return {"message":"Verified"},200
+            isPrivate=request.headers.get("x-private")
+            if isPrivate=="True":
+                response=UserMarshal().isPrivate(search)
+                return response
+            else:
+                response=UserMarshal().isPublic(search)
+                return response
+            
