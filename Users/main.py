@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-from Resources.user import User,UserVerify
-from DiscussionHUB.DataBase.sqlDataBase import db
+from Resources.user import User
 
 app=Flask(__name__)
 api=Api(app)

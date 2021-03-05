@@ -1,0 +1,14 @@
+version: '3'
+
+services: 
+  db:
+    image: 
+      mongo
+    ports: 
+      - 27017:27017
+  oauth:
+    build: .
+    ports: 
+      - 8082:8082
+    depends_on: 
+      - db
