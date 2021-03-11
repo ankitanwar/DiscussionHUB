@@ -1,7 +1,7 @@
 from flask_restful import Resource,reqparse
-from flask import request
-from database.mongoDB_AccessToken import AccessTokenDB
+from flask import request,jsonify
 import requests
+import services.services as service
 
 class AccessToken(Resource):
 
@@ -10,26 +10,19 @@ class AccessToken(Resource):
     parser.add_argument("password")
 
     def post(self):
+        response=None
         data=AccessToken.parser.parse_args()
         verify=requests.post("http://127.0.0.1:8080/verify",json={"email":data["email"],"password":data["password"]})
         if verify.status_code<299:
             response=verify.json()
-            AccessTokenDB(**response).CreateAccessToken()    
-            print(verify.content)  
         else:
-            return {"message":"Invalid credentials"}
+            return jsonify({"message":"Invalid credentials"})
+        token=service.createAccessToken(userID=response["id"],email=response["email"],firstName=response["firstName"])
+        return token
     
     def get(self):
-        accessToken=request.headers.get("x-access-token")
-        email=request.headers.get("email")
-        if email=="":
-            return {"message":"Invalid email address"}
-        if accessToken=="":
-            return {"message":"Invalid access token"}
-        result=AccessTokenDB(email=email).verifyAccessToken()
-        if result==None:
-            return {"message":"Invalid Credentials please log in again"}
-        if result["access_token"]!=accessToken:
-            return {"message":"Invalid Access Token"}
-        return {"message":"verified"}
+        accessToken=request.headers.get("access_token")
+        userID=request.headers.get("userID")
+        response=service.verifyAccessToken(accessToken,userID)
+        return response
 

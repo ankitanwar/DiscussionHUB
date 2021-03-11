@@ -33,6 +33,7 @@ class UserMarshal:
     def isPublic(self,result):
         values={}
         values["id"]=result[0]
+        values["firstName"]=result[1]
         values["email"]=result[3]
         return values
     def isPrivate(self,result):

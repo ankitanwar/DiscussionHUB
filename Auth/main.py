@@ -2,9 +2,10 @@ from flask import Flask
 from flask_restful import Api
 from database.mongoDB_AccessToken import cluster
 from resources.user import AccessToken
+
 app=Flask(__name__)
 api=Api(app)
-
+app.config["SECRET_KEY"]="thisisthesecretkey"
 api.add_resource(AccessToken,"/access")
 
 if __name__=="__main__":

@@ -12,11 +12,11 @@ try:
 except Exception as e:
     print("Error while connecting to the user database {}".format(e))
 
-
 INSERT="INSERT INTO user (firstname,lastname,email,password) VALUES (%s,%s,%s,%s)"
 SEARCHBYMAIL="SELECT * FROM user WHERE email = %s"
 DELETE="DELETE FROM user WHERE email = %s"
-UPDATE="UPDATE user SET firstname=%s,lastname=%s,email=%s password=%s WHERE id=%s"
+UPDATE="UPDATE user SET firstname=%s,lastname=%s,email=%s WHERE id=%s"
+UPDATEPASSWORD="UPDATE user SET password=%s WHERE id=%s"
 SEARCHBYID="SELECT * FROM user WHERE id = %s"
 
 
@@ -52,9 +52,13 @@ class UserDataBase:
 
 
     def updateDetails(self,id):
-        data=(self.firstname,self.lastname,self.email,self.Password,id)
-        print("The value of data is ",data)
-        cursor.Execute(UPDATE,data)
+        data=(self.firstname,self.lastname,self.email,id)
+        cursor.execute(UPDATE,data)
+        db.commit()
+
+    def updatePassword(self,userID):
+        data=(self.Password,userID)
+        cursor.excute(UPDATEPASSWORD,data)
         db.commit()
 
 
