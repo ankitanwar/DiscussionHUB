@@ -12,12 +12,12 @@ except Exception as e:
 class AccessToken:
     def SaveAccessToken(self,email,userID,accessToken,firstName):
         filter={"_id":userID}
-        data={"email":email,"userID":userID,"access_token":accessToken,"firstName":firstName}
+        data={"email":email,"access_token":accessToken,"firstName":firstName}
         result=collection.update(filter,data,upsert=True)
         print("The value of rsult in accessTokenDb is",result)
 
     def GetAccessToken(self,userID):
-        filter={"_id":userID}
-        result=collection.find_one(filter)
+        filter={"_id":int(userID)}
+        result=collection.find_one(filter=filter)
         if result!=None:
             return result

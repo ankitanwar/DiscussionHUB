@@ -6,14 +6,18 @@ import bcrypt
 salt=bcrypt.gensalt()
 
 class UserService:
-    def deleteUserAccount(self,email):
-        if not email:
+    def deleteUserAccount(self,userID):
+        if not userID:
             return jsonify({"message":"Invalid Email Address"})
-        UserDataBase(email=email).deleteUser()
-        return {"message":"User has been deleted successfully"},200
+        try:
+            UserDataBase().deleteUser(userID=userID)
+            return {"message":"User has been deleted successfully"},200
+        except:
+            return {"message":"Some Error Has Been Occured While Deleting The Account"}, 500
 
     def getUserDetails(self,userID):
         result=UserDataBase().searchByID(id=userID)
+        
         isPrivate=request.headers.get("x-private")
         if isPrivate=="True":
             response=UserMarshal().isPrivate(result)
@@ -30,23 +34,32 @@ class UserService:
             firstName=savedInfo[1]
         if not lastName:
             lastName=savedInfo[2]
-        UserDataBase(firstName,lastName,email).updateDetails(id=userID)
-        return jsonify({"message":"User Details Has Been Updated Successfully"})
+        try:
+            UserDataBase(firstName,lastName,email).updateDetails(id=userID)
+            return jsonify({"message":"User Details Has Been Updated Successfully"})
+        except:
+            return {"message":"Error While Updating The Details"},500
 
     def changePassword(self,userID,password):
         receviedPassword=bytes(password,encoding='utf-8')
         hashed = bcrypt.hashpw(receviedPassword,salt)
         password=hashed
-        UserDataBase(password=password).updatePassword(userID)
-        return jsonify({"message":"Password Has Been Updated Successfully"})
+        try:
+            UserDataBase(password=password).updatePassword(userID)
+            return jsonify({"message":"Password Has Been Updated Successfully"})
+        except:
+            return {"message":"Error While Updating The password"},500
 
 
     def createNewUser(self,firstName="",lastName="",email="",password=""):
         receviedPassword=bytes(password,encoding='utf-8')
         hashed = bcrypt.hashpw(receviedPassword,salt)
         password=hashed
-        UserDataBase(firstName,lastName,email,password).add()
-        return jsonify({"message":"User Created Successfully"})
+        try:
+            UserDataBase(firstName,lastName,email,password).add()
+            return jsonify({"message":"User Created Successfully"})
+        except:
+            return {"message":"Error whille Creating The Account"},500
 
     def verifyUser(self,email,password):
         if not email:

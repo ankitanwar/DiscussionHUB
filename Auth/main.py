@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-from database.mongoDB_AccessToken import cluster
+from database.accessTokenDB import cluster
 from resources.user import AccessToken
 
 app=Flask(__name__)

@@ -8,18 +8,10 @@ class Feed(Resource):
     parser.add_argument("content",type=str)
     
     def post(self):
-        userID=request.headers.get("userID")
-        accessToken=request.headers.get("access_token")
-        headers={"userID":userID}
         verify=requests.get("http://127.0.0.1:8082/access",headers=request.headers)
-        if verify.status_code<299:
-            respones=verify.json()
-            print("The value of response is",respones)
-            return
-        if userID=="":
-            return {"message":"Invalid User ID"}
-        if accessToken=="":
-            return {"message":"Invalid token ID"}
+        response=verify.json()
+        if verify.status_code>299:
+            return response
         data=Feed.parser.parse_args()
         if data["content"]=="":
             return {"message":"Inavlid Content To Post"}

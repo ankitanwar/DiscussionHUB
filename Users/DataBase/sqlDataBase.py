@@ -14,10 +14,10 @@ except Exception as e:
 
 INSERT="INSERT INTO user (firstname,lastname,email,password) VALUES (%s,%s,%s,%s)"
 SEARCHBYMAIL="SELECT * FROM user WHERE email = %s"
-DELETE="DELETE FROM user WHERE email = %s"
+DELETE="DELETE FROM user WHERE id = %s"
 UPDATE="UPDATE user SET firstname=%s,lastname=%s,email=%s WHERE id=%s"
 UPDATEPASSWORD="UPDATE user SET password=%s WHERE id=%s"
-SEARCHBYID="SELECT * FROM user WHERE id = %s"
+SEARCHBYID="SELECT * FROM user WHERE id=%s"
 
 
 class UserDataBase:
@@ -40,14 +40,15 @@ class UserDataBase:
             return found
 
     def searchByID(self,id):
-        cursor.execute(SEARCHBYID,id)
+        data=(id,)
+        cursor.execute(SEARCHBYID,data)
         found=cursor.fetchone()
         if found:
             return found
             
-    def deleteUser(self):
-        email=(self.email,)
-        cursor.execute(DELETE,email)
+    def deleteUser(self,userID):
+        filter=(userID,)
+        cursor.execute(DELETE,filter)
         db.commit()
 
 

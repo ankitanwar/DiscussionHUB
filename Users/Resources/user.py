@@ -9,13 +9,13 @@ from functools import wraps
 
 def autheticateUser(f):
     @wraps(f)
-    def decorated():
+    def decorated(*args,**kwargs):
         url="http://127.0.0.1:8082/access"
-        req=requests.get(url,request.headers)
+        req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":
             return jsonify({"message":"Invalid Token ID"})
-        return f
+        return f(*args,**kwargs)
     return decorated
 
 class User(Resource):
@@ -41,9 +41,8 @@ class User(Resource):
 
     @autheticateUser
     def delete(self):
-        data=User.parser.parse_args()
-        email=data["email"]
-        response=UserService().deleteUserAccount(email=email)
+        userID=request.headers.get("userID")
+        response=UserService().deleteUserAccount(userID)
         return response
 
         
@@ -51,7 +50,10 @@ class User(Resource):
     def patch(self):
         data=User.parser.parse_args()
         userID=request.headers.get("userID")
-        response=UserService().ModifyDetails(userID=userID,**data)
+        firstName=data["firstname"]
+        lastname=data["lastname"]
+        email=data["email"]
+        response=UserService().ModifyDetails(userID=userID,email=email,firstName=firstName,lastName=lastname)
         return response
 
     @autheticateUser
@@ -73,4 +75,12 @@ class UserVerify(Resource):
         email=data["email"]
         password=data["password"]
         response=UserService().verifyUser(email,password)
+        return response
+    
+    @autheticateUser
+    def patch(self):
+        userID=request.headers.get("userID")
+        data=UserVerify().parser.parse_args()
+        password=data["password"]
+        response=UserService().changePassword(userID,password)
         return response
