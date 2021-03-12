@@ -1,26 +1,33 @@
 from flask_restful import Resource,reqparse
-from flask import request
+from flask import request,jsonify
 from services.services import FeedService
 import requests
+from functools import wraps
+
+def getUserDetails(f):
+    @wraps(f)
+    def decorated(*args,**kwargs):
+        url="http://127.0.0.1:8082/access"
+        req=requests.get(url,headers=request.headers)
+        response=req.json()
+        if response["message"]!="valid":
+            return jsonify({"message":"Invalid Token ID"})
+        return f(*args,**kwargs)
+    return decorated
+
 
 class Feed(Resource):
     parser=reqparse.RequestParser()
     parser.add_argument("content",type=str)
     
+    @getUserDetails
     def post(self):
-        verify=requests.get("http://127.0.0.1:8082/access",headers=request.headers)
-        response=verify.json()
-        if verify.status_code>299:
-            return response
-        data=Feed.parser.parse_args()
-        if data["content"]=="":
-            return {"message":"Inavlid Content To Post"}
-        userName="Testing"
-        result=FeedService().addNewContent(userName,userID,data["content"])
-        return result
+        data=request.get_json()
+        if not data:
+            return {"message":"Invalid Request"}, 400
         
         
-
+    @getUserDetails  #this is bascially to authenticate the request
     def delete(self):
         pass
 
