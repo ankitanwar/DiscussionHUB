@@ -6,7 +6,7 @@ import database.accessTokenDB as db
 
 def createAccessToken(userID,email,firstName):
     token=jwt.encode({'userID':userID, 'email':email,'exp':datetime.datetime.utcnow()+datetime.timedelta(minutes=60)},app.config["SECRET_KEY"])
-    tokenID=token.decode('UTF-8')
+    tokenID=token
     try:
         db.AccessToken().SaveAccessToken(email,userID,tokenID,firstName)
         return jsonify({"token":tokenID})

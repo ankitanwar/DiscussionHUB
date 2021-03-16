@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 try:
-    cluster=MongoClient(host="127.0.0.1",port=27017)
+    cluster=MongoClient(host="localhost",port=27017)
     db=cluster["User"]
     collection=db["AccessToken"]
 except Exception as e:
