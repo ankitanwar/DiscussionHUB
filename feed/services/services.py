@@ -1,33 +1,57 @@
 import database.db as db
 from flask import jsonify
 from bson.objectid import ObjectId
+from domain.domain import FeedDomain
 
 class FeedService:
-    def addNewContent(self,userID,userName,Content):
+    def addNewContent(self,FeedDomain):
         try:
-            Content["userID"]=userID
-            db.Feeds().addPost(Content)
-            Content.pop("userID")
-        except:
+            response=db.Feeds().addPost(FeedDomain)
+        except Exception as e:
+            print("the value of error is",e)
             return {"message":"Error while Adding the post"}
         
         try:
-            db.UserFeed().addNewPost(userID,userName,Content)
+            postID=str(response.inserted_id)
+            db.UserFeed().addNewPost(FeedDomain,postID)
             return {"message":"Successfully Added The post"}
-        except:
-            return {"message":"Error While Adding The Post"},500
+        except Exception as e:
+            db.Feeds().deletePost(FeedDomain.userID,response.inserted_id)
+            return {"message":"Error While Adding The Post2"},500
 
     def deleteContent(self,userID,postID):
         postID=ObjectId(postID)
         try:
-            db.Feeds().deletePost(userID,postID)
+            response=db.Feeds().deletePost(userID,postID)
+            if response==None:
+                return {"message":"Unable To Delete The post"},500
             db.UserFeed().deleteContent(userID,postID)
             return {"message":"Post Has Been Deleted Successfully"},200
         except:
             return {"message":"Error while deleting the post"},500
 
-    def modifyContent(self,userID,postID):
-        pass
+    def modifyContent(self,userID,postID,FeedDomain):
+        postID=ObjectId(postID)
+        savedDetaills=db.Feeds().getPost(postID)
+        if savedDetaills==None:
+            return {"message":"Unable To Fetch The Details"},404
+        if FeedDomain.company=="":
+            FeedDomain.company=savedDetaills["company"]
+        if FeedDomain.description=="":
+            FeedDomain.description=savedDetaills["description"]
+        if FeedDomain.experience=="":
+            FeedDomain.experience=savedDetaills['experience']
+        if FeedDomain.role=="":
+            FeedDomain.role=savedDetaills["role"]
+        try:
+            response=db.Feeds().ModifyPost(postID,FeedDomain)
+            if response==None:
+                return{"message":"Unable To Update The post"},500
+            db.UserFeed().ModifyPost(postID,FeedDomain)
+        except Exception as e:
+            print("the value of error is",e)
+            return {"message":"Error While Updating The Details"},500
+
 
     def ViewContentOfUser(self,userID):
         try:
@@ -38,7 +62,7 @@ class FeedService:
             return {"message":"No Data Found"}, 404
         else:
             for values in response["Content"]:
-                values["_id"]=str(values["_id"])
+                values["postID"]=str(values["postID"])
             return response["Content"]
         
     def getPost(self,postID):

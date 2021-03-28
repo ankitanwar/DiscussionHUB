@@ -1,8 +1,9 @@
 from pymongo import MongoClient
+from domain.domain import FeedDomain
 
 try:
     cluster=MongoClient(host="localhost",port=27017)
-    db=cluster["feeds"]
+    db=cluster["DiscussionHUB"]
     collection=db["feeds"]
     userCollection=db["users"]
 except Exception as e:
@@ -11,8 +12,9 @@ except Exception as e:
 
 class Feeds:
     
-    def addPost(self,content):
-        response=collection.insert_one(content)
+    def addPost(self,FeedDomain):
+        details={"userID":FeedDomain.userID,"userName":FeedDomain.userName,"company":FeedDomain.company,"role":FeedDomain.role,"description":FeedDomain.description,"experience":FeedDomain.experience}
+        response=collection.insert_one(details)
         return response
 
 
@@ -21,25 +23,28 @@ class Feeds:
         result=collection.find_one(filter)
         return result
 
-    def ModifyPost(self):
-        pass
+    def ModifyPost(self,postID,FeedDomain):
+        filter={"_id":postID}
+        update={"$set":{"company":FeedDomain.company,"description":FeedDomain.description,"role":FeedDomain.role,"experience":FeedDomain.experience}}
+        response=collection.find_one_and_update(filter,update,upsert=False)
+        return response
     
     def deletePost(self,userID,postID):
         filter={"_id":postID,"userID":userID}
-        ans=collection.delete_one(filter)
-        print("The value of ans is",ans)
+        response=collection.find_one_and_delete(filter,upsert=False)
+        return response
     
     def filterValues(self,experience,role,company):
         filter={"experience":experience,"role":role,"company":company}
-        result=collection.find(filter)
+        result=collection.find(filter,upsert=False)
         return result
 
 
 class UserFeed:
 
-    def addNewPost(self,userID,userName,content):
-        filter={"_id":userID}
-        add={'$push':{"Content":content}}
+    def addNewPost(self,FeedDomain,postID):
+        filter={"_id":FeedDomain.userID}
+        add={'$push':{"Content":{"company":FeedDomain.company,"role":FeedDomain.role,"description":FeedDomain.description,"experience":FeedDomain.experience,"postID":postID}}}
         response=userCollection.update(filter,add,upsert=True)
         return response
 
@@ -52,3 +57,8 @@ class UserFeed:
         filter={"_id":userID}
         remove={"$pull":{"Content":{"postID":postID}}}
         userCollection.update_one(filter,remove)
+    
+    def ModifyPost(self,postID,FeedDomain):
+        filter={"_id":FeedDomain.userID,"Content.postID":postID}
+        update={"$set":{"Content":{"company":FeedDomain.company,"description":FeedDomain.description,"role":FeedDomain.role,"experience":FeedDomain.experience}}}
+        userCollection.update_one(filter,update)
