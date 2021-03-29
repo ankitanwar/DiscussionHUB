@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from domain.domain import FeedDomain
 
 try:
-    cluster=MongoClient(host="localhost",port=27017)
+    cluster=MongoClient(host="feeddb",port=27017)
     db=cluster["DiscussionHUB"]
     collection=db["feeds"]
     userCollection=db["users"]
@@ -60,5 +60,5 @@ class UserFeed:
     
     def ModifyPost(self,postID,FeedDomain):
         filter={"_id":FeedDomain.userID,"Content.postID":postID}
-        update={"$set":{"Content":{"company":FeedDomain.company,"description":FeedDomain.description,"role":FeedDomain.role,"experience":FeedDomain.experience}}}
+        update={"$set":{"Content":{"company":FeedDomain.company,"description":FeedDomain.description,"role":FeedDomain.role,"experience":FeedDomain.experience,"postID":postID}}}
         userCollection.update_one(filter,update)

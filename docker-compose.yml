@@ -1,0 +1,30 @@
+version: '3'
+
+services: 
+  mysqldb:
+    image: mysql
+    restart: always
+    environment: 
+      MYSQL_ROOT_PASSWORD: "mysql"
+      MYSQL_DATABASE: "user"
+      MYSQL_USER: "root"
+
+  user: 
+    build: ./Users
+    restart: always
+    ports: 
+      - 8080:8080
+    depends_on: 
+      - mysqldb
+     
+  feeddb:
+    image: 
+      mongo
+    volumes: 
+      - ./mongoDB/feedData:/app
+  feed:
+    build: ./feed
+    ports: 
+      - 8070:8070
+    depends_on: 
+      - feeddb

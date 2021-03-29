@@ -1,0 +1,12 @@
+FROM ubuntu
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y python3-pip
+RUN apt-get install -y python
+RUN python3 -m pip install --upgrade pip
+WORKDIR /app
+COPY ./requirements.txt ./
+RUN python3 -m pip install -r requirements.txt
+COPY . .
+EXPOSE 8070
+CMD [ "python3","main.py" ]

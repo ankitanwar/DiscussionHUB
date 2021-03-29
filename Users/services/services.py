@@ -16,7 +16,12 @@ class UserService:
             return {"message":"Some Error Has Been Occured While Deleting The Account"}, 500
 
     def getUserDetails(self,userID):
-        result=UserDataBase().searchByID(id=userID)
+        try:
+            result=UserDataBase().searchByID(id=userID)
+            if result==None:
+                return {"message":"Unable To Fetch The User Details"},404
+        except:
+            return {"message":"Some Internal Error Has Been Occured While Fetch The Details"},500
         
         isPrivate=request.headers.get("x-private")
         if isPrivate=="True":
@@ -27,7 +32,14 @@ class UserService:
             return response 
 
     def ModifyDetails(self,userID,email="",firstName="",lastName=""):
-        savedInfo=UserDataBase().searchByID(id=userID)
+        try:
+            savedInfo=UserDataBase().searchByID(id=userID)
+            if savedInfo==None:
+                return {"message":"Unable To Fetch The User Details"}
+        except:
+            return {"message":"Some Internal Error Has Been Occured While Fetch The Details"},500
+        if savedInfo==None:
+            return {"message":"Unable To Fetch The User Details"},404
         if not email:
             email=savedInfo[3]
         if not firstName:
@@ -66,7 +78,12 @@ class UserService:
             return jsonify({"message":"Please Enter The valid Email Address"})
         if not password or len(password)<5:
             return jsonify({"message":"Invalid credentials"})
-        searchUser=UserDataBase(email=email).searchByEmail()
+        try:
+            searchUser=UserDataBase(email=email).searchByEmail()
+            if searchUser==None:
+                return {"message":"Unable To Find The Account With Given Email Id"},404
+        except:
+            return {"message":"Some Internal Error Has Been Occured While Fetch The Details"},500
         receviedPassword=bytes(password,encoding='utf-8')
         storedPassword=bytes(searchUser[4],encoding='utf-8')
         checkPassword=bcrypt.checkpw(receviedPassword,storedPassword)

@@ -78,3 +78,6 @@ class filterContent(Resource):
         response=FeedService().filterPost(filters['experience'],filters["role"],filters["company"])
         return response
         
+class Ping(Resource):
+    def get(self):
+        return {"message":"pong"},200

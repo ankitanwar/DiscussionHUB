@@ -39,26 +39,26 @@ class User(Resource):
         response=UserService().createNewUser(firstName,lastName,email,password)
         return response
 
-    @autheticateUser
+    # @autheticateUser
     def delete(self):
-        userID=request.headers.get("userID")
+        userID=request.headers.get("X-USER-ID")
         response=UserService().deleteUserAccount(userID)
         return response
 
         
-    @autheticateUser
+    # @autheticateUser
     def patch(self):
         data=User.parser.parse_args()
-        userID=request.headers.get("userID")
+        userID=request.headers.get("X-USER-ID")
         firstName=data["firstname"]
         lastname=data["lastname"]
         email=data["email"]
         response=UserService().ModifyDetails(userID=userID,email=email,firstName=firstName,lastName=lastname)
         return response
 
-    @autheticateUser
+    # @autheticateUser
     def get(self):
-        userID=request.headers.get("userID")
+        userID=request.headers.get("X-USER-ID")
         details=UserService().getUserDetails(userID)
         return details
         
@@ -77,9 +77,9 @@ class UserVerify(Resource):
         response=UserService().verifyUser(email,password)
         return response
     
-    @autheticateUser
+    # @autheticateUser
     def patch(self):
-        userID=request.headers.get("userID")
+        userID=request.headers.get("X-USER-ID")
         data=UserVerify().parser.parse_args()
         password=data["password"]
         response=UserService().changePassword(userID,password)

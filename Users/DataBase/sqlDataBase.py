@@ -3,7 +3,7 @@ import mysql.connector
 
 try:
     db=mysql.connector.connect(
-        host="mysql",
+        host="mysqldb",
         user="root",
         passwd="mysql",
         database="user",
@@ -18,7 +18,11 @@ DELETE="DELETE FROM user WHERE id = %s"
 UPDATE="UPDATE user SET firstname=%s,lastname=%s,email=%s WHERE id=%s"
 UPDATEPASSWORD="UPDATE user SET password=%s WHERE id=%s"
 SEARCHBYID="SELECT * FROM user WHERE id=%s"
+CREATETABLE= ('CREATE TABLE IF NOT EXISTS `user` (`id` int NOT NULL AUTO_INCREMENT,`firstname` varchar(45) NOT NULL,`lastname` varchar(45) DEFAULT NULL,`email` varchar(45) NOT NULL,`password` varchar(145) NOT NULL,PRIMARY KEY (`id`),UNIQUE KEY `id_UNIQUE` (`id`),UNIQUE KEY `email_UNIQUE` (`email`))')
 
+
+def CreateTable():
+    cursor.execute(CREATETABLE)
 
 class UserDataBase:
     def __init__(self,firstname="",lastname="",email="",password=""):

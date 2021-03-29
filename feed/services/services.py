@@ -20,19 +20,20 @@ class FeedService:
             return {"message":"Error While Adding The Post2"},500
 
     def deleteContent(self,userID,postID):
-        postID=ObjectId(postID)
+        postIDKey=ObjectId(postID)
         try:
-            response=db.Feeds().deletePost(userID,postID)
+            response=db.Feeds().deletePost(userID,postIDKey)
             if response==None:
                 return {"message":"Unable To Delete The post"},500
             db.UserFeed().deleteContent(userID,postID)
             return {"message":"Post Has Been Deleted Successfully"},200
-        except:
+        except Exception as e:
+            print("The value of error is",e)
             return {"message":"Error while deleting the post"},500
 
     def modifyContent(self,userID,postID,FeedDomain):
-        postID=ObjectId(postID)
-        savedDetaills=db.Feeds().getPost(postID)
+        postIDKey=ObjectId(postID)
+        savedDetaills=db.Feeds().getPost(postIDKey)
         if savedDetaills==None:
             return {"message":"Unable To Fetch The Details"},404
         if FeedDomain.company=="":
@@ -44,12 +45,12 @@ class FeedService:
         if FeedDomain.role=="":
             FeedDomain.role=savedDetaills["role"]
         try:
-            response=db.Feeds().ModifyPost(postID,FeedDomain)
+            response=db.Feeds().ModifyPost(postIDKey,FeedDomain)
             if response==None:
                 return{"message":"Unable To Update The post"},500
             db.UserFeed().ModifyPost(postID,FeedDomain)
-        except Exception as e:
-            print("the value of error is",e)
+            return {"message":"Post Has Been Updated Successfully"},200
+        except:
             return {"message":"Error While Updating The Details"},500
 
 
