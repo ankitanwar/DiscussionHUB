@@ -12,7 +12,10 @@ class AccessToken(Resource):
     def post(self):
         response=None
         data=AccessToken.parser.parse_args()
-        verify=requests.post("http://127.0.0.1:8080/verify",json={"email":data["email"],"password":data["password"]})
+        try:
+            verify=requests.post("http://user:8080/verify",json={"email":data["email"],"password":data["password"]})
+        except:
+            return {"message":"Error While trying to verify email ID and password"},500
         if verify.status_code<299:
             response=verify.json()
         else:

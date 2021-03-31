@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 try:
-    cluster=MongoClient(host="localhost",port=27017)
+    cluster=MongoClient(host="authdb",port=27017)
     db=cluster["User"]
     collection=db["AccessToken"]
 except Exception as e:
@@ -13,8 +13,7 @@ class AccessToken:
     def SaveAccessToken(self,email,userID,accessToken,firstName):
         filter={"_id":userID}
         data={"email":email,"access_token":accessToken,"firstName":firstName}
-        result=collection.update(filter,data,upsert=True)
-        print("The value of rsult in accessTokenDb is",result)
+        collection.update(filter,data,upsert=True)
 
     def GetAccessToken(self,userID):
         filter={"_id":int(userID)}

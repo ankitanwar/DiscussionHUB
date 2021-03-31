@@ -1,7 +1,9 @@
 version: '3'
 
 services: 
+
   mysqldb:
+    container_name: sql_userdb
     image: mysql
     restart: always
     environment: 
@@ -10,6 +12,7 @@ services:
       MYSQL_USER: "root"
 
   user: 
+    container_name: user_microservice
     build: ./Users
     restart: always
     ports: 
@@ -18,13 +21,28 @@ services:
       - mysqldb
      
   feeddb:
+    container_name: feed_db
     image: 
       mongo
     volumes: 
       - ./mongoDB/feedData:/app
   feed:
+    container_name: feed_microservice
     build: ./feed
     ports: 
       - 8070:8070
     depends_on: 
       - feeddb
+
+  authdb:
+    container_name: auth_db
+    image: 
+      mongo
+  
+  auth:
+    container_name: authentication_service
+    build: ./Auth
+    ports: 
+      - 8082:8082
+    depends_on: 
+      - authdb
