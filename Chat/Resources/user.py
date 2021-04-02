@@ -23,9 +23,8 @@ class User(Resource):
         data=User.parser.parse_args()
         adminID=getUserID()
         check=RoomServices().checkAdmin(roomID,adminID)
-        print("The value of check is",check)
         if check!=True:
-            return {"message":"Cannot Delete Member From The Group"}, 400
+            return {"message":"Cannot Remove Member From The Group"}, 400
         result=RoomServices().RemoveMember(userID=data["memberID"],roomID=roomID)
         return result
 

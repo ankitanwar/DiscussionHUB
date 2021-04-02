@@ -80,7 +80,26 @@ class FeedService:
     
     def filterPost(self,experience,role,company):
         try:
-            result=db.Feeds().filterValues(experience,role,company)
-            return result
-        except:
+            ans=[]
+            results=None
+            if experience!=None:
+                results=db.Feeds().filterByExperience(experience)
+            elif role!=None:
+                results=db.Feeds().filterByRole(role)
+            elif company!=None:
+                results=db.Feeds().filterByCompany(company)
+            for values in results:
+                if experience!=None and values["experience"]!=experience:
+                    continue
+                elif role!=None and values["role"]!=role:
+                    continue
+                elif company!=None and values["company"]!=company:
+                    continue
+                else:
+                    values["_id"]=str(values["_id"])
+                    ans.append(values)
+            return ans
+
+        except Exception as e:
+            print("the value of error is",e)
             return {"message":"Cannot Filter Values According to the result"}

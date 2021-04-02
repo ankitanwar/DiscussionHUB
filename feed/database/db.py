@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from domain.domain import FeedDomain
 
 try:
-    cluster=MongoClient(host="feeddb",port=27017)
+    cluster=MongoClient(host="localhost",port=27017)
     db=cluster["DiscussionHUB"]
     collection=db["feeds"]
     userCollection=db["users"]
@@ -34,9 +34,19 @@ class Feeds:
         response=collection.find_one_and_delete(filter,upsert=False)
         return response
     
-    def filterValues(self,experience,role,company):
-        filter={"experience":experience,"role":role,"company":company}
-        result=collection.find(filter,upsert=False)
+    def filterByExperience(self,experience):
+        filter={"experience":experience}
+        result=collection.find(filter)
+        return result
+    
+    def filterByRole(self,role):
+        filter={"role":role}
+        result=collection.find(filter)
+        return result
+    
+    def filterByCompany(self,companyName):
+        filter={"company":companyName}
+        result=collection.find(filter)
         return result
 
 
