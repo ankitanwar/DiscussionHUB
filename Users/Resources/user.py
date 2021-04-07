@@ -10,7 +10,7 @@ from functools import wraps
 def autheticateUser(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        url="http://auth/access"
+        url="http://auth:8082/access"
         req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":

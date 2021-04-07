@@ -8,7 +8,7 @@ from domain.domain import FeedDomain
 def authenticate_request(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        url="http://auth/access"
+        url="http://auth:8082/access"
         req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":
@@ -17,7 +17,7 @@ def authenticate_request(f):
     return decorated
 
 def authenticate_and_get_details():
-    url="http://auth/access"
+    url="http://auth:8082/access"
     req=requests.get(url,headers=request.headers)
     response=req.json()
     return response

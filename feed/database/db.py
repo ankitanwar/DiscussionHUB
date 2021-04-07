@@ -1,13 +1,20 @@
 from pymongo import MongoClient
 from domain.domain import FeedDomain
+import time
 
-try:
-    cluster=MongoClient(host="feeddb",port=27017)
-    db=cluster["DiscussionHUB"]
-    collection=db["feeds"]
-    userCollection=db["users"]
-except Exception as e:
-    print("Error While connecting to the databse {}".format(e))
+retries=5
+while retries>0:
+    try:
+        cluster=MongoClient(host="feeddb",port=27017)
+        db=cluster["DiscussionHUB"]
+        collection=db["feeds"]
+        userCollection=db["users"]
+        break
+    except Exception as e:
+        print("Error While connecting to the databse {}".format(e))
+        retries-=1
+        print("max retires left",retries)
+        time.sleep(3)
 
 
 class Feeds:

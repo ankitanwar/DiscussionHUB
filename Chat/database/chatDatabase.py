@@ -1,11 +1,19 @@
 from pymongo import MongoClient
 from domain.user import Room
-try:
-    cluster=MongoClient(host="chatdb",port=27017)
-    db=cluster["Chat"]
-    collection=db["messages"]
-except Exception as e:
-    print("Error while connecting to the database {}".format(e))
+import time
+
+retries=5
+while retries>0:
+    try:
+        cluster=MongoClient(host="chatdb",port=27017)
+        db=cluster["Chat"]
+        collection=db["messages"]
+        break
+    except Exception as e:
+        print("Error While connecting to the databse {}".format(e))
+        retries-=1
+        print("max retires left",retries)
+        time.sleep(3)
 
 class chatDB:
 

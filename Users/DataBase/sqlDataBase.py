@@ -1,16 +1,24 @@
 import bcrypt
 import mysql.connector
+import time
 
-try:
-    db=mysql.connector.connect(
-        host="sql_userdb",
-        user="root",
-        passwd="mysql",
-        database="user",
-    )
-    cursor=db.cursor(buffered=True)
-except Exception as e:
-    print("Error while connecting to the user database {}".format(e))
+retries=5
+while retries>0:
+    try:
+        db=mysql.connector.connect(
+            host="mysqldb",
+            user="root",
+            passwd="mysql",
+            database="user",
+        )
+        cursor=db.cursor(buffered=True)
+        break
+    except Exception as e:
+        print("Error while connecting to the user database {}".format(e))
+        retries-=1
+        print("max retires left",retries)
+        time.sleep(3)
+
 
 INSERT="INSERT INTO user (firstname,lastname,email,password) VALUES (%s,%s,%s,%s)"
 SEARCHBYMAIL="SELECT * FROM user WHERE email = %s"

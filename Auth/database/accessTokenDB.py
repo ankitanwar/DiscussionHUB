@@ -1,13 +1,18 @@
 from pymongo import MongoClient
+import time
 
-try:
-    cluster=MongoClient(host="authdb",port=27017)
-    db=cluster["User"]
-    collection=db["AccessToken"]
-except Exception as e:
-    print("Error while connecting to the database{}".format(e))
-
-
+retries=5
+while retries>0:
+    try:
+        cluster=MongoClient(host="authdb",port=27017)
+        db=cluster["User"]
+        collection=db["AccessToken"]
+        break
+    except Exception as e:
+        print("Error While connecting to the databse {}".format(e))
+        retries-=1
+        print("max retires left",retries)
+        time.sleep(3)
 
 class AccessToken:
 

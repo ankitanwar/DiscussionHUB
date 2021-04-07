@@ -9,7 +9,8 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: "mysql"
       MYSQL_DATABASE: "user"
-      MYSQL_USER: "root"
+    volumes: 
+      - ./data/pg:/var/lib/mysql
 
   user: 
     container_name: user_microservice
@@ -25,7 +26,8 @@ services:
     image: 
       mongo
     volumes: 
-      - ./mongoDB/feedData:/app
+      - ./data/feed/:/data/db
+
   feed:
     container_name: feed_microservice
     build: ./feed
@@ -38,6 +40,8 @@ services:
     container_name: auth_db
     image: 
       mongo
+    volumes: 
+      - ./data/auth/:/data/db
   
   auth:
     container_name: authentication_service
@@ -51,11 +55,15 @@ services:
     container_name: chatdb
     image:
       mongo
+    volumes: 
+      - ./data/chatDB/:/data/db
   
   roomdb:
     container_name: roomdb
     image:
       mongo
+    volumes: 
+      - ./data/roomDB/:/data/db
   
   chat:
     container_name: chat

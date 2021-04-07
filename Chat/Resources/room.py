@@ -11,7 +11,7 @@ def getUserID():
 def authenticate_request(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        url="http://127.0.0.1:8082/access"
+        url="http://auth:8082/access"
         req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":
