@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from domain.user import Room
 try:
-    cluster=MongoClient(host="localhost",port=27017)
+    cluster=MongoClient(host="roomdb",port=27017)
     db=cluster["Chat"]
     collection=db["Rooms"]
 except Exception as e:
@@ -38,7 +38,8 @@ def MakeAdmin(roomID,memberID):
     filter={"_id":roomID,"members.userID":memberID}
     makeAdmin={"$set":{"members.$.admin":True}}
     try:
-        collection.update(filter,makeAdmin)
+        response=collection.update(filter,makeAdmin)
+        return response
     except Exception as e:
         return {"message":"Error While Making The user Admin{}".format(e)}
 
@@ -55,3 +56,16 @@ def checkAdmin(roomID,userID):
     if result==0:
         return False
     return True
+
+def update_room_name(roomID,roomName):
+    filter={"_id":roomID}
+    update={"$set":{"name":roomName}}
+    try:
+        response=collection.find_one_and_update(filter,update)
+        return response
+    except:
+        return {"message":"Error While Updating The Room Name"}
+
+
+
+

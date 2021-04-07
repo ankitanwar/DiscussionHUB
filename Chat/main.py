@@ -9,6 +9,6 @@ socketio.init_app(app)
 
 if __name__=="__main__":
     try:
-        socketio.run(app,port=8085,debug=True)
+        socketio.run(app,host="0.0.0.0",port=8085,debug=True)
     except Exception as e:
         print("Error while starting the server {}".format(e))

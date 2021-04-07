@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from domain.user import Room
 try:
-    cluster=MongoClient(host="localhost",port=27017)
+    cluster=MongoClient(host="chatdb",port=27017)
     db=cluster["Chat"]
     collection=db["messages"]
 except Exception as e:

@@ -46,3 +46,23 @@ services:
       - 8082:8082
     depends_on: 
       - authdb
+  
+  chatdb:
+    container_name: chatdb
+    image:
+      mongo
+  
+  roomdb:
+    container_name: roomdb
+    image:
+      mongo
+  
+  chat:
+    container_name: chat
+    build: ./Chat
+    ports:
+      - 8085:8085
+    depends_on:
+      - chatdb
+      - roomdb
+

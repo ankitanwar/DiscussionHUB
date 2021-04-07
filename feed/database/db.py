@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from domain.domain import FeedDomain
 
 try:
-    cluster=MongoClient(host="localhost",port=27017)
+    cluster=MongoClient(host="feeddb",port=27017)
     db=cluster["DiscussionHUB"]
     collection=db["feeds"]
     userCollection=db["users"]

@@ -5,6 +5,7 @@ from flask_socketio import join_room,leave_room,send
 from sockets import socketio
 
 class RoomServices:
+
     def CreateNewRoom(self,userID,RoomName):
         if len(RoomName)<=0:
             return {"message":"Please Enter The valid Room Name"},400
@@ -15,8 +16,10 @@ class RoomServices:
             return {"message":"Error While Creating the Room {}".format(e)}
         try:
             roomdb.AddMembers(userID,roomID,admin=True)
+            return {"message":"room has been created Successfully"}
         except Exception as e:
-            return {"message":"Error While Creating the Room {}".format(e)}     
+            return {"message":"Error While Creating the Room {}".format(e)}
+
 
     def GetRoomMembers(self,roomID,userID):
         if len(roomID)<=0:
@@ -25,8 +28,17 @@ class RoomServices:
         result=roomdb.GetRoomMembers(roomID)
         return result["members"]
 
-    def UpdateRoom(self,roomID,details):
-        pass
+
+    def UpdateRoom(self,roomID,roomName):
+        if roomName=="":
+            return {"message":"Please Enter The Valid Room Name"},500
+        try:
+            roomID=ObjectId(roomID)
+            roomdb.update_room_name(roomID,roomName)
+            return {"message":"Room Name Has Been Updated Successfully"}
+        except:
+            return {"mmesage":"Unable To Update The Room Name"}
+
 
     @socketio.on("join_room")
     def AddMemberInRoom(self,memberID,roomID):
@@ -40,6 +52,7 @@ class RoomServices:
             return {"message":"Error While Adding The Memeber Into The Room {}".format(e)}
         send("member " + memberID + "has joined the room")
 
+
     @socketio.on("leave_room")
     def RemoveMember(self,userID,roomID):
         roomID=ObjectId(roomID)
@@ -50,13 +63,17 @@ class RoomServices:
         except Exception as e:
             return {"message":"Error While Removing The Member {}".format(e)}
 
+
     def MakeAdmin(self,memberID,roomID):
         roomID=ObjectId(roomID)
         try:
-            roomdb.MakeAdmin(roomID,memberID)
+            response=roomdb.MakeAdmin(roomID,memberID)
+            if response["nModified"]==0:
+                return {"message":"Unable To Assign Admin Power To The Given User....."},500
             return {"message":"User Has Been Addedd To The Admin Successfully"}
         except Exception as e:
             return("Error While Making The Member Admin{}".format(e))
+
     
     def IsRoomMember(self,roomID,memberID):
         if not roomID:
@@ -66,6 +83,7 @@ class RoomServices:
         roomID=ObjectId(roomID)
         check=roomdb.CheckInRoom(roomID=roomID,userID=memberID)
         return check
+
     
     def checkAdmin(self,roomID,adminID):
         if not roomID:

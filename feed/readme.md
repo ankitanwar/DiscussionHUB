@@ -25,6 +25,7 @@ Feed Service is responsible to mange the post added by the users and display the
 | Get | To Get All The Post Of The Given User |host:8070/feed |
 | Get | To Get The Particular Post With The Given PostID |host:8070/feed/:PostID |
 | Get | To Filter Post According To The Values Provided By The Users |host:8070/filter |
+| Patch | To Modify The Post | host:8070/feed/:feedID |
 
 
 

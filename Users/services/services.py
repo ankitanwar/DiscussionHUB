@@ -46,6 +46,7 @@ class UserService:
             firstName=savedInfo[1]
         if not lastName:
             lastName=savedInfo[2]
+        print("the value of name,last,email",firstName,lastName,email)
         try:
             UserDataBase(firstName,lastName,email).updateDetails(id=userID)
             return jsonify({"message":"User Details Has Been Updated Successfully"})
@@ -59,7 +60,8 @@ class UserService:
         try:
             UserDataBase(password=password).updatePassword(userID)
             return jsonify({"message":"Password Has Been Updated Successfully"})
-        except:
+        except Exception as e:
+            print("the value of error is",e)
             return {"message":"Error While Updating The password"},500
 
 

@@ -10,7 +10,7 @@ from functools import wraps
 def autheticateUser(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        url="http://127.0.0.1:8082/access"
+        url="http://auth/access"
         req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":
@@ -39,26 +39,26 @@ class User(Resource):
         response=UserService().createNewUser(firstName,lastName,email,password)
         return response
 
-    # @autheticateUser
+    @autheticateUser
     def delete(self):
-        userID=request.headers.get("X-USER-ID")
+        userID=request.headers.get("X-Caller-ID")
         response=UserService().deleteUserAccount(userID)
         return response
 
         
-    # @autheticateUser
+    @autheticateUser
     def patch(self):
         data=User.parser.parse_args()
-        userID=request.headers.get("X-USER-ID")
+        userID=request.headers.get("X-Caller-ID")
         firstName=data["firstname"]
         lastname=data["lastname"]
         email=data["email"]
         response=UserService().ModifyDetails(userID=userID,email=email,firstName=firstName,lastName=lastname)
         return response
 
-    # @autheticateUser
+    @autheticateUser
     def get(self):
-        userID=request.headers.get("X-USER-ID")
+        userID=request.headers.get("X-Caller-ID")
         details=UserService().getUserDetails(userID)
         return details
         
@@ -77,7 +77,7 @@ class UserVerify(Resource):
         response=UserService().verifyUser(email,password)
         return response
     
-    # @autheticateUser
+    @autheticateUser
     def patch(self):
         userID=request.headers.get("X-USER-ID")
         data=UserVerify().parser.parse_args()

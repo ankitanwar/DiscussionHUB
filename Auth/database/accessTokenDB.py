@@ -10,6 +10,7 @@ except Exception as e:
 
 
 class AccessToken:
+
     def SaveAccessToken(self,email,userID,accessToken,firstName):
         filter={"_id":userID}
         data={"email":email,"access_token":accessToken,"firstName":firstName}
@@ -20,3 +21,8 @@ class AccessToken:
         result=collection.find_one(filter=filter)
         if result!=None:
             return result
+    
+    def delete_access_token(self,userID,accessToken):
+        filter={"_id":int(userID),"access_token":accessToken}
+        response=collection.find_one_and_delete(filter)
+        return response

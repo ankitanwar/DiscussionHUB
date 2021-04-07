@@ -5,16 +5,23 @@ from functools import wraps
 from services.services import FeedService
 from domain.domain import FeedDomain
 
-def authenticateUser(f):
+def authenticate_request(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        url="http://127.0.0.1:8082/access"
+        url="http://auth/access"
         req=requests.get(url,headers=request.headers)
         response=req.json()
         if response["message"]!="valid":
             return jsonify({"message":"Invalid Token ID"})
         return f(*args,**kwargs)
     return decorated
+
+def authenticate_and_get_details():
+    url="http://auth/access"
+    req=requests.get(url,headers=request.headers)
+    response=req.json()
+    return response
+
 
 
 class Feed(Resource):
@@ -26,8 +33,11 @@ class Feed(Resource):
 
     #To post the new content
     def post(self):
-        userID=request.headers.get("X-USER-ID")
-        userName="testing"
+        verify_and_getdetails=authenticate_and_get_details()
+        if verify_and_getdetails["message"]!="valid":
+            return verify_and_getdetails
+        userName=verify_and_getdetails["userName"]
+        userID=request.headers.get("X-Caller-ID")
         details=Feed.parser.parse_args()
         feed=FeedDomain(details["company"],details["role"],details["description"],details["experience"],userID,userName)
         response=FeedService().addNewContent(feed)
@@ -45,16 +55,18 @@ class Feed(Resource):
 class modifyContent(Resource):
 
     #Allow user to modify the content they have posted
+    @authenticate_request
     def patch(self,postID):
-        userID=request.headers.get("X-USER-ID")
+        userID=request.headers.get("X-Caller-ID")
         updatedDetails=request.get_json()
         feed=FeedDomain(updatedDetails["company"],updatedDetails["role"],updatedDetails["description"],updatedDetails["experience"],userID)
         response=FeedService().modifyContent(userID,postID,feed)
         return response
     
     #Allow user to delete the post they have posted
+    @authenticate_request
     def delete(self,postID):
-        userID=request.headers.get("X-USER-ID")
+        userID=request.headers.get("X-Caller-ID")
         response=FeedService().deleteContent(userID,postID)
         return response
     

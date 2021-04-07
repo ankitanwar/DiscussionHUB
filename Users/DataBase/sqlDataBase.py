@@ -3,7 +3,7 @@ import mysql.connector
 
 try:
     db=mysql.connector.connect(
-        host="mysqldb",
+        host="sql_userdb",
         user="root",
         passwd="mysql",
         database="user",
@@ -63,7 +63,7 @@ class UserDataBase:
 
     def updatePassword(self,userID):
         data=(self.Password,userID)
-        cursor.excute(UPDATEPASSWORD,data)
+        cursor.execute(UPDATEPASSWORD,data)
         db.commit()
 
 
